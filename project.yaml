@@ -7,13 +7,13 @@ schema:
     file: ./schema.graphql
 network:
   genesisHash: '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c'
-  endpoint: wss://acala-polkadot.api.onfinality.io/public-ws
+  endpoint: wss://acala.polkawallet.io
   dictionary: https://api.subquery.network/sq/subquery/acala-dictionary
   chaintypes:
     file: './src/types.json'
 dataSources:
     - kind: substrate/Runtime
-      startBlock: 100
+      startBlock: 1
       mapping:
         file: './dist/index.js'
         handlers:

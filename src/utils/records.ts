@@ -1,7 +1,6 @@
 import { isSystemAccount } from './systemAccounts'
-import { nativeToken, getTokenDecimals, isTokenEqual } from './tokens'
+import { nativeToken, getTokenDecimals, isTokenEqual, getCurrencyObject } from './tokens'
 import { Token, Account, AccountBalance, DailyAccountBalance, HourAccountBalance, HourToken, DailyToken } from '../types/models'
-import { getCurrencyObject } from '@acala-network/sdk-core'
 
 export async function getToken(id: string) {
     let record = await Token.get(id)
@@ -106,8 +105,6 @@ export async function getAccountBalance(address: string, tokenName: string) {
             const feeFrozen = BigInt(balanceData.data.feeFrozen.toString())
 
             frozen = miscFrozen > feeFrozen ? miscFrozen : feeFrozen;
-
-
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const balanceData = (await api.query.tokens.accounts(address, getCurrencyObject(tokenName))) as any
