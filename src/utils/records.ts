@@ -1,6 +1,7 @@
-import { isTokenEqual, isSystemAccount } from '@acala-network/subql-utils'
-import { nativeToken, getTokenDecimals } from './tokens'
+import { isSystemAccount } from './systemAccounts'
+import { nativeToken, getTokenDecimals, isTokenEqual } from './tokens'
 import { Token, Account, AccountBalance, DailyAccountBalance, HourAccountBalance, HourToken, DailyToken } from '../types/models'
+import { getCurrencyObject } from '@acala-network/sdk-core'
 
 export async function getToken(id: string) {
     let record = await Token.get(id)
@@ -19,6 +20,9 @@ export async function getToken(id: string) {
             issuance = BigInt(rawIssuance.toString())
         }
 
+        record.volume = BigInt(0)
+        record.reserved = BigInt(0)
+        record.frozen = BigInt(0)
         record.issuance = issuance
     }
 
@@ -94,7 +98,7 @@ export async function getAccountBalance(address: string, tokenName: string) {
 
         if (isTokenEqual(tokenName, nativeToken)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const balanceData = (await api.query.system.accounts(address)) as any
+            const balanceData = (await api.query.system.account(address)) as any
 
             free = BigInt(balanceData.data.free.toString())
             reserved = BigInt(balanceData.data.reserved.toString())
@@ -106,7 +110,7 @@ export async function getAccountBalance(address: string, tokenName: string) {
 
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const balanceData = (await api.query.tokens.accounts(address)) as any
+            const balanceData = (await api.query.tokens.accounts(address, getCurrencyObject(tokenName))) as any
             free = BigInt(balanceData.free.toString())
             reserved = BigInt(balanceData.reserved.toString())
             frozen = BigInt(balanceData.frozen.toString())

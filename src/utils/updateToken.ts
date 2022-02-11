@@ -1,4 +1,4 @@
-import { getDateStartOfDay, getDateStartOfHour } from '@acala-network/subql-utils'
+import { getDateStartOfDay, getDateStartOfHour } from '../utils/date'
 import { Token, DailyToken, HourToken } from '../types/models'
 import { getToken, getDailyToken, getHourToken } from './records'
 

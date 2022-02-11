@@ -1,4 +1,4 @@
-import { getDateStartOfDay, getDateStartOfHour } from '@acala-network/subql-utils'
+import { getDateStartOfDay, getDateStartOfHour } from '../utils/date'
 import { AccountBalance, DailyAccountBalance, HourAccountBalance } from '../types/models'
 import { getAccount, getAccountBalance, getDailyAccountBalance, getHourAccountBalance } from './records'
 

@@ -1,30 +1,34 @@
-import { Wallet } from "@acala-network/sdk"
-import { ApiPromise } from "@polkadot/api"
+import { forceToCurrencyName, getCurrencyObject, isForeignAssetName } from "@acala-network/sdk-core"
+import { zip } from 'lodash'
 
-function getWalletFC () {
-  const wallet = new Wallet(api as ApiPromise)
+export const nativeToken = api.registry.chainTokens[0]
 
-  return async () => {
-    await wallet.isReady
+let tokensDecimalsMap = Object.fromEntries(zip(api.registry.chainTokens, api.registry.chainDecimals));
 
-    return wallet
-  }
+// inert LiquidCrowdloanCurrencyId tokens decimal
+if (tokensDecimalsMap['DOT']) {
+  tokensDecimalsMap['lc://13'] = tokensDecimalsMap['DOT'];
 }
 
-const getWallet = getWalletFC()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getTokenName (token: any) {
-  const wallet = await getWallet()
-
-  return wallet.getToken(token).then((i) => i.symbol)
+  return forceToCurrencyName(token);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getTokenDecimals (token: any) {
-  const wallet = await getWallet()
+  const name = forceToCurrencyName(token);
 
-  return wallet.getToken(token).then((i) => i.decimals)
+  if (isForeignAssetName(name) && !tokensDecimalsMap[name]) {
+    const metadata = (await api.query.assetRegistry.assetMetadatas(getCurrencyObject(name))) as any;
+
+    tokensDecimalsMap[name] = Number(metadata.unwrapOrDefault().decimals.toString());
+  }
+
+  return tokensDecimalsMap[name] ?? 12;
 }
 
-export const nativeToken = api.registry.chainTokens[0]
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isTokenEqual = (token1: any, token2: any) => forceToCurrencyName(token1) === forceToCurrencyName(token2);

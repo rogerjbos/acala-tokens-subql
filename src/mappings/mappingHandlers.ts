@@ -51,7 +51,6 @@ export async function handleBalancesUnreserved(event: SubstrateEvent) {
     DONOT need handle balances.DustLost as blanaces.DustLost is appear with treasury.Deposit
  */
 export async function handleTreasuryDepositEvent(event: SubstrateEvent) {
-    try {
     // Some funds have been deposited. \[deposit\]
     const [deposit] = event.event.data
     const extrinsic = event.extrinsic
@@ -64,9 +63,6 @@ export async function handleTreasuryDepositEvent(event: SubstrateEvent) {
     const nativeTokenName = await getTokenName(nativeToken)
 
     await handleTreasuryDeposit(accountId, nativeTokenName, depositAmount, event.block.timestamp)
-    } catch (e) {
-        logger.info(JSON.stringify(e))
-    }
 }
 
 // 	handle balances.ReserveRepatriated
