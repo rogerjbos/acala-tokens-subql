@@ -28,7 +28,7 @@ export async function updateAccountBalance(address: string, tokenName: string, f
     const dailyAccountBalance = await getDailyAccountBalance(address, tokenName, dayDate)
 
     // if free is changed, the total balance will change
-    accountBalance.total = accountBalance.total + freeChanged
+    accountBalance.total = accountBalance.total + freeChanged + frozenChanged
     accountBalance.free = accountBalance.free + freeChanged
     accountBalance.reserved = accountBalance.reserved + reservedChanged
     accountBalance.frozen = accountBalance.frozen + frozenChanged
