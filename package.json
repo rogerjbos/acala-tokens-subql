@@ -20,7 +20,7 @@
   "author": "qwer951123",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@subql/cli": "^0.16.0",
+    "@subql/cli": "^0.20.0",
     "@subql/types": "^0.10.1"
   },
   "dependencies": {
