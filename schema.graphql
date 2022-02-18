@@ -71,3 +71,4 @@ type DailyAccountBalance @entity {
     frozen: BigInt! # locked balance
     timestamp: Date
 }
+
