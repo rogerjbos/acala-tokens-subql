@@ -46,6 +46,9 @@ type AccountBalance @entity {
     free: BigInt! # free balance
     reserved: BigInt! #revert balance
     frozen: BigInt! # locked balance
+
+    updateAt: BigInt! # update block number
+    initAt: BigInt!
 }
 
 type HourAccountBalance @entity {

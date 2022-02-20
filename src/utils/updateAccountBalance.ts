@@ -1,6 +1,7 @@
 import { getDateStartOfDay, getDateStartOfHour } from '../utils/date'
 import { AccountBalance, DailyAccountBalance, HourAccountBalance } from '../types/models'
 import { getAccount, getAccountBalance, getDailyAccountBalance, getHourAccountBalance } from './records'
+import { isTokenEqual, nativeToken } from './tokens'
 
 export function updateAccountBalanceHistoryRecord(source: AccountBalance, target: HourAccountBalance | DailyAccountBalance) {
     target.total = source.total
@@ -17,18 +18,21 @@ export function updateAccountBalanceHistoryRecord(source: AccountBalance, target
  * @param reservedChanged
  * @param frozenChanged
  * @param timestamp
+ * @param blockNumber
  */
-export async function updateAccountBalance(address: string, tokenName: string, freeChanged: bigint, reservedChanged: bigint, frozenChanged: bigint, timestamp: Date) {
+export async function updateAccountBalance(address: string, tokenName: string, freeChanged: bigint, reservedChanged: bigint, frozenChanged: bigint, timestamp: Date, blockNumber: bigint) {
     const account = await getAccount(address)
-    const [accountBalance, isInited]= await getAccountBalance(address, tokenName)
+    const accountBalance = await getAccountBalance(address, tokenName, blockNumber)
 
     const hourDate = getDateStartOfHour(timestamp).toDate()
     const dayDate = getDateStartOfDay(timestamp).toDate()
     const hourAccountBalance = await getHourAccountBalance(address, tokenName, hourDate)
     const dailyAccountBalance = await getDailyAccountBalance(address, tokenName, dayDate)
 
-    // if the account balance is initizlied, don't do any calculate
-    if (!isInited) {
+    // ignore update when the account balance is initizlied and initAt is equal to blocknumber
+    if (isTokenEqual(tokenName, nativeToken) && accountBalance.initAt && accountBalance.initAt === blockNumber) {
+        // pass
+    } else {
         // if free is changed, the total balance will change
         accountBalance.total = accountBalance.total + freeChanged + frozenChanged
         accountBalance.free = accountBalance.free + freeChanged

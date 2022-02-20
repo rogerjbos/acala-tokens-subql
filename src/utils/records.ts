@@ -79,7 +79,7 @@ export async function getAccount(id: string) {
     return record
 }
 
-export async function getAccountBalance(address: string, tokenName: string) {
+export async function getAccountBalance(address: string, tokenName: string, blockNumber: bigint) {
     const id = `${address}-${tokenName}`
 
     let record = await AccountBalance.get(id)
@@ -101,6 +101,7 @@ export async function getAccountBalance(address: string, tokenName: string) {
 
             free = BigInt(balanceData.data.free.toString())
             reserved = BigInt(balanceData.data.reserved.toString())
+
             const miscFrozen = BigInt(balanceData.data.miscFrozen.toString())
             const feeFrozen = BigInt(balanceData.data.feeFrozen.toString())
 
@@ -113,14 +114,12 @@ export async function getAccountBalance(address: string, tokenName: string) {
         record.free = free
         record.reserved = reserved
         record.frozen = frozen
-
-        // some native tokens were issuced from gensis, should be marked to prevent double counting
-        if (isTokenEqual(tokenName, nativeToken)) {
-            return [record, true] as const
-        }
+        record.initAt= blockNumber
     }
 
-    return [record, false] as const
+    record.updateAt = blockNumber
+
+    return record;
 }
 
 export async function getHourAccountBalance(address: string, tokenName: string, timestamp: Date) {
