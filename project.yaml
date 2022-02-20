@@ -22,6 +22,21 @@ dataSources:
             filter:
               module: blances
               method: Transfer
+          - handler: handleBalancesDeposit
+            kind: substrate/EventHandler
+            filter:
+              module: blances
+              method: Deposit
+          - handler: handleBalancesWithdraw
+            kind: substrate/EventHandler
+            filter:
+              module: blances
+              method: Withdraw
+          - handler: handleBalancesDustLost
+            kind: substrate/EventHandler
+            filter:
+              module: blances
+              method: DustLost
           - handler: handleBalancesReserved
             kind: substrate/EventHandler
             filter:
@@ -32,11 +47,6 @@ dataSources:
             filter:
               module: balances
               method: Unreserved
-          - handler: handleTreasuryDepositEvent
-            kind: substrate/EventHandler
-            filter:
-              module: treasury
-              method: Deposit
           - handler: handleBalancesReserveRepatriated
             kind: substrate/EventHandler
             filter:

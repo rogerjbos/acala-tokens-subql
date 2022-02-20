@@ -23,6 +23,42 @@ export async function handleBalancesTransfer(event: SubstrateEvent) {
     await handleTransfer(tokenName, fromId, toId, amount, event.block.timestamp)
 }
 
+/*
+handle balances.Deposit
+*/
+export async function handleBalancesDeposit(event: SubstrateEvent) {
+    const [to, value] = event.event.data
+    const toId = to.toString()
+    const amount = BigInt(value.toString())
+    const tokenName = await getTokenName(nativeToken)
+
+    await handleDeposit(toId, tokenName, amount, event.block.timestamp)
+}
+
+/*
+handle balances.Withdraw
+*/
+export async function handleBalancesWithdraw(event: SubstrateEvent) {
+    const [from, value] = event.event.data
+    const fromId = from.toString()
+    const amount = BigInt(value.toString())
+    const tokenName = await getTokenName(nativeToken)
+
+    await handleWithdrawn(fromId, tokenName, amount, event.block.timestamp)
+}
+
+/*
+handle balances.DustLost
+*/
+export async function handleBalancesDustLost(event: SubstrateEvent) {
+    const [from, value] = event.event.data
+    const fromId = from.toString()
+    const amount = BigInt(value.toString())
+    const tokenName = await getTokenName(nativeToken)
+
+    await handleWithdrawn(fromId, tokenName, amount, event.block.timestamp)
+}
+
 // handle balances.Reserved
 export async function handleBalancesReserved(event: SubstrateEvent) {
     // Some balance was reserved (moved from free to reserved). \[who, value\]
@@ -44,25 +80,6 @@ export async function handleBalancesUnreserved(event: SubstrateEvent) {
     const nativeTokenName = await getTokenName(nativeToken)
 
     await handleUnReserved(account, nativeTokenName, amount, event.block.timestamp)
-}
-
-/*
-    handle treasury.Deposit
-    DONOT need handle balances.DustLost as blanaces.DustLost is appear with treasury.Deposit
- */
-export async function handleTreasuryDepositEvent(event: SubstrateEvent) {
-    // Some funds have been deposited. \[deposit\]
-    const [deposit] = event.event.data
-    const extrinsic = event.extrinsic
-
-    // treasury.deposit must have extrinsic
-    if (!extrinsic) return;
-
-    const depositAmount = BigInt(deposit.toString())
-    const accountId = extrinsic.extrinsic.signer.toString()
-    const nativeTokenName = await getTokenName(nativeToken)
-
-    await handleTreasuryDeposit(accountId, nativeTokenName, depositAmount, event.block.timestamp)
 }
 
 // 	handle balances.ReserveRepatriated
