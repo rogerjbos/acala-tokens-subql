@@ -20,22 +20,22 @@ dataSources:
           - handler: handleBalancesTransfer
             kind: substrate/EventHandler
             filter:
-              module: blances
+              module: balances
               method: Transfer
           - handler: handleBalancesDeposit
             kind: substrate/EventHandler
             filter:
-              module: blances
+              module: balances
               method: Deposit
           - handler: handleBalancesWithdraw
             kind: substrate/EventHandler
             filter:
-              module: blances
+              module: balances
               method: Withdraw
           - handler: handleBalancesDustLost
             kind: substrate/EventHandler
             filter:
-              module: blances
+              module: balances
               method: DustLost
           - handler: handleBalancesReserved
             kind: substrate/EventHandler
