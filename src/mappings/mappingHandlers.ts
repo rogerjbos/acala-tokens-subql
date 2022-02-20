@@ -99,6 +99,7 @@ export async function handleCurrenciesTransfer(event: SubstrateEvent) {
     // don't handle native token here
     if (tokenName === nativeName) return;
 
+
     await handleTransfer(tokenName, fromId, toId, amountN, event.block.timestamp)
 }
 

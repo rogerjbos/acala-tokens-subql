@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "yarn build && ./node_modules/.bin/subql-node -f . --timeout=512 --batch-size=2 --port=3123",
+    "start": "./node_modules/.bin/subql-node -f . --timeout=512 --batch-size=2 --port=3123",
     "build": "tsc -b",
     "prepack": "rm -rf dist && npm build",
     "test": "jest",

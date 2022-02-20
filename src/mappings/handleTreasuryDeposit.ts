@@ -15,7 +15,7 @@ export async function handleTreasuryDeposit(accountId: string, tokenName: string
     await updateToken(tokenName, BigInt(0), amount, BigInt(0), BigInt(0), timestamp)
     await updateAccountBalance(treasurAccount, tokenName, amount, BigInt(0), BigInt(0), timestamp)
 
-    const accountBalnace = await getAccountBalance(accountId, tokenName) 
+    const [accountBalnace] = await getAccountBalance(accountId, tokenName) 
 
     if (accountBalnace.frozen > amount && isTokenEqual(tokenName, nativeToken)) {
         await updateAccountBalance(accountId, tokenName, BigInt(0), BigInt(0), -amount, timestamp)

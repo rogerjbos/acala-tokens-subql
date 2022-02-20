@@ -20,18 +20,21 @@ export function updateAccountBalanceHistoryRecord(source: AccountBalance, target
  */
 export async function updateAccountBalance(address: string, tokenName: string, freeChanged: bigint, reservedChanged: bigint, frozenChanged: bigint, timestamp: Date) {
     const account = await getAccount(address)
-    const accountBalance = await getAccountBalance(address, tokenName)
+    const [accountBalance, isInited]= await getAccountBalance(address, tokenName)
 
     const hourDate = getDateStartOfHour(timestamp).toDate()
     const dayDate = getDateStartOfDay(timestamp).toDate()
     const hourAccountBalance = await getHourAccountBalance(address, tokenName, hourDate)
     const dailyAccountBalance = await getDailyAccountBalance(address, tokenName, dayDate)
 
-    // if free is changed, the total balance will change
-    accountBalance.total = accountBalance.total + freeChanged + frozenChanged
-    accountBalance.free = accountBalance.free + freeChanged
-    accountBalance.reserved = accountBalance.reserved + reservedChanged
-    accountBalance.frozen = accountBalance.frozen + frozenChanged
+    // if the account balance is initizlied, don't do any calculate
+    if (!isInited) {
+        // if free is changed, the total balance will change
+        accountBalance.total = accountBalance.total + freeChanged + frozenChanged
+        accountBalance.free = accountBalance.free + freeChanged
+        accountBalance.reserved = accountBalance.reserved + reservedChanged
+        accountBalance.frozen = accountBalance.frozen + frozenChanged
+    }
 
     updateAccountBalanceHistoryRecord(accountBalance, hourAccountBalance)
     updateAccountBalanceHistoryRecord(accountBalance, dailyAccountBalance)
