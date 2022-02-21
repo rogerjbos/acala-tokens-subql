@@ -8,6 +8,7 @@ import { handleUnReserved } from './handleUnReserved'
 import { handleReservedRepatriated } from './handleReserveRepatriated'
 import { handleWithdrawn } from './handleWithdrawn'
 import { handleBalanceUpdated } from './handleBalanceUpdated'
+import { isNewAccount } from '../utils/isNewAccount'
 
 /*
 handle balances.Transfer
@@ -20,8 +21,10 @@ export async function handleBalancesTransfer(event: SubstrateEvent) {
     const amount = BigInt(value.toString())
     const tokenName = await getTokenName(nativeToken)
     const blockNumber = event.block.block.header.number.toBigInt()
+    const fromAccountIsNew = isNewAccount(fromId, event);
+    const toAccountIsNew = isNewAccount(toId, event);
 
-    await handleTransfer(tokenName, fromId, toId, amount, event.block.timestamp, blockNumber)
+    await handleTransfer(tokenName, fromId, toId, amount, event.block.timestamp, blockNumber, fromAccountIsNew, toAccountIsNew)
 }
 
 /*
@@ -33,8 +36,9 @@ export async function handleBalancesDeposit(event: SubstrateEvent) {
     const amount = BigInt(value.toString())
     const tokenName = await getTokenName(nativeToken)
     const blockNumber = event.block.block.header.number.toBigInt()
+    const accountIsNew = isNewAccount(toId, event);
 
-    await handleDeposit(toId, tokenName, amount, event.block.timestamp, blockNumber)
+    await handleDeposit(toId, tokenName, amount, event.block.timestamp, blockNumber, accountIsNew)
 }
 
 /*
@@ -46,8 +50,9 @@ export async function handleBalancesWithdraw(event: SubstrateEvent) {
     const amount = BigInt(value.toString())
     const tokenName = await getTokenName(nativeToken)
     const blockNumber = event.block.block.header.number.toBigInt()
+    const accountIsNew = isNewAccount(fromId, event);
 
-    await handleWithdrawn(fromId, tokenName, amount, event.block.timestamp, blockNumber)
+    await handleWithdrawn(fromId, tokenName, amount, event.block.timestamp, blockNumber, accountIsNew)
 }
 
 /*

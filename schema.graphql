@@ -49,6 +49,7 @@ type AccountBalance @entity {
 
     updateAt: BigInt! # update block number
     initAt: BigInt!
+    initFromChainAt: BigInt
 }
 
 type HourAccountBalance @entity {

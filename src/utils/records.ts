@@ -79,7 +79,12 @@ export async function getAccount(id: string) {
     return record
 }
 
-export async function getAccountBalance(address: string, tokenName: string, blockNumber: bigint) {
+export async function getAccountBalance(
+    address: string,
+    tokenName: string,
+    blockNumber: bigint,
+    isNewAccount?: boolean
+) {
     const id = `${address}-${tokenName}`
 
     let record = await AccountBalance.get(id)
@@ -95,7 +100,8 @@ export async function getAccountBalance(address: string, tokenName: string, bloc
         let reserved = BigInt(0);
         let frozen = BigInt(0);
 
-        if (isTokenEqual(tokenName, nativeToken)) {
+        // will init token balance when token is native token and is not new account
+        if (isTokenEqual(tokenName, nativeToken) && !isNewAccount) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const balanceData = (await api.query.system.account(address)) as any
 
@@ -106,20 +112,21 @@ export async function getAccountBalance(address: string, tokenName: string, bloc
             const feeFrozen = BigInt(balanceData.data.feeFrozen.toString())
 
             frozen = miscFrozen > feeFrozen ? miscFrozen : feeFrozen;
+            record.initFromChainAt = blockNumber
         }
 
         total = free + reserved
 
+        record.initAt= blockNumber
         record.total = total 
         record.free = free
         record.reserved = reserved
         record.frozen = frozen
-        record.initAt= blockNumber
     }
 
     record.updateAt = blockNumber
 
-    return record;
+    return record
 }
 
 export async function getHourAccountBalance(address: string, tokenName: string, timestamp: Date) {
