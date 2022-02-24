@@ -1,7 +1,6 @@
 import { isSystemAccount } from './systemAccounts'
-import { nativeToken, getTokenDecimals, isTokenEqual } from './tokens'
+import { nativeToken, getTokenDecimals, isTokenEqual, getCurrencyObject } from './tokens'
 import { Token, Account, AccountBalance, DailyAccountBalance, HourAccountBalance, HourToken, DailyToken } from '../types/models'
-import { getCurrencyObject } from '@acala-network/sdk-core'
 
 export async function getToken(id: string) {
     let record = await Token.get(id)
@@ -80,7 +79,12 @@ export async function getAccount(id: string) {
     return record
 }
 
-export async function getAccountBalance(address: string, tokenName: string) {
+export async function getAccountBalance(
+    address: string,
+    tokenName: string,
+    blockNumber: bigint,
+    isNewAccount?: boolean
+) {
     const id = `${address}-${tokenName}`
 
     let record = await AccountBalance.get(id)
@@ -96,33 +100,31 @@ export async function getAccountBalance(address: string, tokenName: string) {
         let reserved = BigInt(0);
         let frozen = BigInt(0);
 
-        if (isTokenEqual(tokenName, nativeToken)) {
+        // will init token balance when token is native token and is not new account
+        if (isTokenEqual(tokenName, nativeToken) && !isNewAccount) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const balanceData = (await api.query.system.account(address)) as any
 
             free = BigInt(balanceData.data.free.toString())
             reserved = BigInt(balanceData.data.reserved.toString())
+
             const miscFrozen = BigInt(balanceData.data.miscFrozen.toString())
             const feeFrozen = BigInt(balanceData.data.feeFrozen.toString())
 
             frozen = miscFrozen > feeFrozen ? miscFrozen : feeFrozen;
-
-
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const balanceData = (await api.query.tokens.accounts(address, getCurrencyObject(tokenName))) as any
-            free = BigInt(balanceData.free.toString())
-            reserved = BigInt(balanceData.reserved.toString())
-            frozen = BigInt(balanceData.frozen.toString())
+            record.initFromChainAt = blockNumber
         }
 
         total = free + reserved
 
+        record.initAt= blockNumber
         record.total = total 
         record.free = free
         record.reserved = reserved
         record.frozen = frozen
     }
+
+    record.updateAt = blockNumber
 
     return record
 }

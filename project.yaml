@@ -6,22 +6,37 @@ repository: 'https://github.com/AcalaNetwork/acala-tokens-subql'
 schema: 
     file: ./schema.graphql
 network:
-  genesisHash: '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b'
-  endpoint: wss://karura.polkawallet.io
-  dictionary: https://api.subquery.network/sq/AcalaNetwork/karura-dictionary
+  genesisHash: '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c'
+  dictionary: https://api.subquery.network/sq/subquery/acala-dictionary
+  endpoint: wss://acala.polkawallet.io
   chaintypes:
     file: './src/chain-types.js'
 dataSources:
     - kind: substrate/Runtime
-      startBlock: 100
+      startBlock: 1
       mapping:
         file: './dist/index.js'
         handlers:
           - handler: handleBalancesTransfer
             kind: substrate/EventHandler
             filter:
-              module: blances
+              module: balances
               method: Transfer
+          - handler: handleBalancesDeposit
+            kind: substrate/EventHandler
+            filter:
+              module: balances
+              method: Deposit
+          - handler: handleBalancesWithdraw
+            kind: substrate/EventHandler
+            filter:
+              module: balances
+              method: Withdraw
+          - handler: handleBalancesDustLost
+            kind: substrate/EventHandler
+            filter:
+              module: balances
+              method: DustLost
           - handler: handleBalancesReserved
             kind: substrate/EventHandler
             filter:
@@ -32,11 +47,6 @@ dataSources:
             filter:
               module: balances
               method: Unreserved
-          - handler: handleTreasuryDepositEvent
-            kind: substrate/EventHandler
-            filter:
-              module: treasury
-              method: Deposit
           - handler: handleBalancesReserveRepatriated
             kind: substrate/EventHandler
             filter:
