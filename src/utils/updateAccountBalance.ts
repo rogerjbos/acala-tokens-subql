@@ -1,13 +1,15 @@
-import { getDateStartOfDay, getDateStartOfHour } from '../utils/date'
+import { getStartOfDay, getStartOfHour, isTokenEqual, getNativeCurrency } from '@acala-network/subql-utils'
 import { AccountBalance, DailyAccountBalance, HourAccountBalance } from '../types/models'
 import { getAccount, getAccountBalance, getDailyAccountBalance, getHourAccountBalance } from './records'
-import { isTokenEqual, nativeToken } from './tokens'
+
+const nativeToken = getNativeCurrency(api as any);
 
 export function updateAccountBalanceHistoryRecord(source: AccountBalance, target: HourAccountBalance | DailyAccountBalance) {
     target.total = source.total
     target.free = source.free
     target.reserved = source.reserved
     target.frozen = source.frozen
+    target.updateAtBlock = source.updateAtBlock
 }
 
 /**
@@ -33,8 +35,8 @@ export async function updateAccountBalance(
     const account = await getAccount(address)
     const accountBalance = await getAccountBalance(address, tokenName, blockNumber, accountIsNew)
 
-    const hourDate = getDateStartOfHour(timestamp).toDate()
-    const dayDate = getDateStartOfDay(timestamp).toDate()
+    const hourDate = getStartOfHour(timestamp)
+    const dayDate = getStartOfDay(timestamp)
     const hourAccountBalance = await getHourAccountBalance(address, tokenName, hourDate)
     const dailyAccountBalance = await getDailyAccountBalance(address, tokenName, dayDate)
 

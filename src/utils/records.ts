@@ -1,14 +1,14 @@
-import { isSystemAccount } from './systemAccounts'
-import { nativeToken, getTokenDecimals, isTokenEqual, getCurrencyObject } from './tokens'
+import { isSystemAccount, getNativeCurrency, getTokenDecimals, isTokenEqual } from '@acala-network/subql-utils'
 import { Token, Account, AccountBalance, DailyAccountBalance, HourAccountBalance, HourToken, DailyToken } from '../types/models'
+
+const nativeToken = getNativeCurrency(api as any);
 
 export async function getToken(id: string) {
     let record = await Token.get(id)
 
     if (!record) {
         record = new Token(id)
-
-        record.decimal = await getTokenDecimals(id)
+        record.decimals = await getTokenDecimals(api as any, id)
 
         let issuance = BigInt(0)
 
@@ -23,6 +23,7 @@ export async function getToken(id: string) {
         record.reserved = BigInt(0)
         record.frozen = BigInt(0)
         record.issuance = issuance
+        record.updateAtBlock = BigInt(0)
     }
 
     return record
@@ -41,6 +42,7 @@ export async function getHourToken(tokenName: string, timestamp: Date) {
         record.frozen = BigInt(0)
         record.reserved = BigInt(0)
         record.timestmap = timestamp
+        record.updateAtBlock = BigInt(0)
     }
 
     return record
@@ -59,6 +61,7 @@ export async function getDailyToken(tokenName: string, timestamp: Date) {
         record.frozen = BigInt(0)
         record.reserved = BigInt(0)
         record.timestmap = timestamp
+        record.updateAtBlock = BigInt(0)
     }
 
     return record
@@ -124,7 +127,7 @@ export async function getAccountBalance(
         record.frozen = frozen
     }
 
-    record.updateAt = blockNumber
+    record.updateAtBlock = blockNumber
 
     return record
 }
@@ -145,6 +148,7 @@ export async function getHourAccountBalance(address: string, tokenName: string, 
         record.reserved = BigInt(0)
         record.frozen = BigInt(0)
         record.timestamp = timestamp
+        record.updateAtBlock = BigInt(0)
     }
 
     return record
@@ -166,6 +170,7 @@ export async function getDailyAccountBalance(address: string, tokenName: string,
         record.reserved = BigInt(0)
         record.frozen = BigInt(0)
         record.timestamp = timestamp
+        record.updateAtBlock = BigInt(0)
     }
 
     return record

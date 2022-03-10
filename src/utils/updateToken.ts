@@ -1,4 +1,4 @@
-import { getDateStartOfDay, getDateStartOfHour } from '../utils/date'
+import { getStartOfDay, getStartOfHour } from '@acala-network/subql-utils'
 import { Token, DailyToken, HourToken } from '../types/models'
 import { getToken, getDailyToken, getHourToken } from './records'
 
@@ -10,6 +10,7 @@ export function updateTokenHistoryRecord(source: Token, target: HourToken | Dail
     target.issuance = source.issuance
     target.reserved = source.reserved
     target.frozen = source.frozen
+    target.updateAtBlock = source.updateAtBlock
 }
 
 /**
@@ -19,13 +20,22 @@ export function updateTokenHistoryRecord(source: Token, target: HourToken | Dail
  * @param volumeChanged
  * @param reservedChanged
  * @param frozenChanged
+ * @param blockNumber
  * @param timestamp
  */
-export async function updateToken(tokenName: string, issuanceChanged: bigint, volumeChanged: bigint, reservedChanged: bigint, frozenChanged: bigint, timestamp: Date) {
+export async function updateToken(
+    tokenName: string,
+    issuanceChanged: bigint,
+    volumeChanged: bigint,
+    reservedChanged: bigint,
+    frozenChanged: bigint,
+    blockNumber: bigint,
+    timestamp: Date
+) {
     const token = await getToken(tokenName)
 
-    const hourDate = getDateStartOfHour(timestamp).toDate()
-    const dayDate = getDateStartOfDay(timestamp).toDate()
+    const hourDate = getStartOfHour(timestamp)
+    const dayDate = getStartOfDay(timestamp)
     const hourToken = await getHourToken(tokenName, hourDate)
     const dailyToken = await getDailyToken(tokenName, dayDate)
 
@@ -33,6 +43,7 @@ export async function updateToken(tokenName: string, issuanceChanged: bigint, vo
     token.issuance = token.issuance + issuanceChanged
     token.reserved = token.reserved + reservedChanged
     token.frozen = token.frozen + frozenChanged
+    token.updateAtBlock = blockNumber
 
     updateTokenHistoryRecord(token, hourToken)
     updateTokenHistoryRecord(token, dailyToken)

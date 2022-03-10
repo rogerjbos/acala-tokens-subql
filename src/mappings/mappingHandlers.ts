@@ -1,5 +1,5 @@
 import { SubstrateEvent } from '@subql/types'
-import { getTokenName, nativeToken } from '../utils/tokens'
+import { getTokenName, getNativeCurrency } from '@acala-network/subql-utils'
 import { handleTransfer } from './handleTransfer'
 import { handleDeposit } from './handleDeposit'
 import { handleTreasuryDeposit } from './handleTreasuryDeposit'
@@ -9,6 +9,8 @@ import { handleReservedRepatriated } from './handleReserveRepatriated'
 import { handleWithdrawn } from './handleWithdrawn'
 import { handleBalanceUpdated } from './handleBalanceUpdated'
 import { isNewAccount } from '../utils/isNewAccount'
+
+const nativeToken = getNativeCurrency(api as any);
 
 /*
 handle balances.Transfer

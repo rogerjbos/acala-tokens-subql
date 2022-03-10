@@ -1,11 +1,12 @@
 type Token @entity {
     id: ID! # token symbol
-    decimal: Int!
+    decimals: Int!
 
     volume: BigInt! # total trade volume, sum of transfer, deposit, withdrawn, reserved, frozen
     issuance: BigInt! # total issuance amount
     reserved: BigInt! # reserved amount
     frozen: BigInt! # frozen balance
+    updateAtBlock: BigInt # update at block
 }
 
 type HourToken @entity {
@@ -17,6 +18,7 @@ type HourToken @entity {
     reserved: BigInt! # reserved amount
     frozen: BigInt! # frozen balance
     timestmap: Date
+    updateAtBlock: BigInt # update at block
 }
 
 type DailyToken @entity {
@@ -28,6 +30,7 @@ type DailyToken @entity {
     reserved: BigInt! # reserved amount
     frozen: BigInt! # frozen balance
     timestmap: Date
+    updateAtBlock: BigInt # update at block
 }
 
 type Account @entity {
@@ -47,7 +50,7 @@ type AccountBalance @entity {
     reserved: BigInt! #revert balance
     frozen: BigInt! # locked balance
 
-    updateAt: BigInt! # update block number
+    updateAtBlock: BigInt! # update block number
     initAt: BigInt!
     initFromChainAt: BigInt
 }
@@ -62,6 +65,7 @@ type HourAccountBalance @entity {
     reserved: BigInt! #revert balance
     frozen: BigInt! # locked balance
     timestamp: Date
+    updateAtBlock: BigInt # update at block
 }
 
 type DailyAccountBalance @entity {
@@ -74,5 +78,6 @@ type DailyAccountBalance @entity {
     reserved: BigInt! #revert balance
     frozen: BigInt! # locked balance
     timestamp: Date
+    updateAtBlock: BigInt # update at block
 }
 
